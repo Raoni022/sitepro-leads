@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SitePro Leads</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--sf:#111;--sf2:#1a1a1a;
+  --b1:#222;--b2:#2d2d2d;
+  --gr:#00ff88;--grd:#00ff8820;--grm:#00ff8840;
+  --am:#ffb800;--amd:#ffb80015;
+  --re:#ff4444;--red:#ff444415;
+  --bl:#4488ff;--bld:#4488ff15;
+  --pu:#aa88ff;--pud:#aa88ff15;
+  --t1:#e8e8e8;--t2:#888;--t3:#555;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;min-height:100vh;overflow-x:hidden}
+header{border-bottom:1px solid var(--b1);padding:12px 20px;display:flex;align-items:center;gap:12px;background:var(--sf);position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.logo{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--gr);white-space:nowrap}
+.logo span{color:var(--t3)}
+.hrow{display:flex;align-items:center;gap:8px;flex:1;min-width:300px}
+.hlabel{font-family:var(--mono);font-size:10px;color:var(--t3);white-space:nowrap;letter-spacing:1px}
+.hinput{flex:1;background:var(--bg);border:1px solid var(--b2);border-radius:6px;padding:7px 10px;color:var(--t1);font-family:var(--mono);font-size:11px;outline:none;transition:border-color .2s;min-width:0}
+.hinput:focus{border-color:var(--gr)}
+.hinput::placeholder{color:var(--t3)}
+.btn-gr{background:var(--gr);color:#000;border:none;border-radius:6px;padding:7px 12px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-gr:hover{opacity:.85}
+.filters{padding:12px 20px;display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;border-bottom:1px solid var(--b1);background:var(--sf2)}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:1px}
+select{background:var(--sf);border:1px solid var(--b2);border-radius:6px;padding:7px 26px 7px 10px;color:var(--t1);font-family:var(--sans);font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .2s;min-width:140px}
+select:focus{border-color:var(--gr)}
+.btn-buscar{background:var(--gr);color:#000;border:none;border-radius:6px;padding:8px 20px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;height:36px;white-space:nowrap;align-self:flex-end}
+.btn-buscar:hover{opacity:.9}
+.btn-buscar:disabled{opacity:.4;cursor:not-allowed}
+.sp{width:13px;height:13px;border:2px solid #00000050;border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:none}
+.loading .sp{display:block}
+.loading .bt{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-pu{background:var(--pud);color:var(--pu);border:1px solid #aa88ff40;border-radius:6px;padding:8px 14px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;height:36px;white-space:nowrap;display:flex;align-items:center;gap:5px;align-self:flex-end}
+.btn-pu:hover{background:#aa88ff25;border-color:var(--pu)}
+.prog-bar{padding:10px 20px;background:var(--grd);border-bottom:1px solid var(--grm);color:var(--gr);font-size:12px;font-family:var(--mono);display:none;align-items:center;gap:12px}
+.prog-bar.show{display:flex}
+.prog-track{flex:1;height:4px;background:var(--b2);border-radius:2px}
+.prog-fill{height:4px;background:var(--gr);border-radius:2px;transition:width .3s}
+.err-bar{padding:10px 20px;background:var(--red);border-bottom:1px solid #ff444430;color:var(--re);font-size:13px;display:none}
+.err-bar.show{display:block}
+.stats{padding:10px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--b1)}
+.sn{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--gr);line-height:1}
+.sn.a{color:var(--am)}.sn.r{color:var(--re)}
+.sl{font-size:11px;color:var(--t2);line-height:1.3}
+.sdiv{width:1px;height:24px;background:var(--b2)}
+.sa{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.bs{background:transparent;border:1px solid var(--b2);border-radius:6px;padding:5px 11px;color:var(--t2);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.bs:hover{border-color:var(--t2);color:var(--t1)}
+.bs.g{border-color:var(--gr);color:var(--gr)}.bs.g:hover{background:var(--grd)}
+.bs.r{border-color:var(--re);color:var(--re)}.bs.r:hover{background:var(--red)}
+.tabs{padding:0 20px;display:flex;border-bottom:1px solid var(--b1)}
+.tab{padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--t2)}
+.tab.active{color:var(--gr);border-bottom-color:var(--gr)}
+.twrap{overflow-x:auto;padding:0 20px 60px}
+table{width:100%;border-collapse:collapse;margin-top:14px;min-width:860px}
+th{text-align:left;padding:8px 10px;font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--t3);border-bottom:1px solid var(--b1);white-space:nowrap;position:sticky;top:53px;background:var(--bg);z-index:10}
+td{padding:8px 10px;border-bottom:1px solid var(--b1);vertical-align:middle;font-size:13px}
+tr:hover td{background:var(--sf)}
+tr.rc td{opacity:.65}
+tr.rf td{opacity:.45}
+.ln{font-weight:600;color:var(--t1);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.la{color:var(--t2);font-size:12px;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.b-sem{background:var(--grd);color:var(--gr);border:1px solid var(--grm)}
+.b-com{background:var(--red);color:var(--re);border:1px solid #ff444430}
+.b-api{background:var(--bld);color:var(--bl);border:1px solid #4488ff30}
+.b-csv{background:var(--pud);color:var(--pu);border:1px solid #aa88ff30}
+.b-cel{background:var(--grd);color:var(--gr);border:1px solid var(--grm);font-size:9px}
+.b-fix{background:transparent;color:var(--t3);border:1px solid var(--b2);font-size:9px}
+.abtns{display:flex;gap:4px}
+.bico{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;border:1px solid var(--b2);background:transparent;cursor:pointer;font-size:14px;transition:all .15s;text-decoration:none;color:var(--t1)}
+.bico:hover{border-color:var(--t2);background:var(--sf2)}
+.bico.wpp{border-color:#25d36630;color:#25d366}.bico.wpp:hover{background:#25d36615;border-color:#25d366}
+.bico.ig{border-color:#e1306c30;color:#e1306c}.bico.ig:hover{background:#e1306c15;border-color:#e1306c}
+.bico.mp{border-color:#4488ff30;color:var(--bl)}.bico.mp:hover{background:var(--bld);border-color:var(--bl)}
+.bico.off{opacity:.25;cursor:default;pointer-events:none}
+.bst{padding:4px 10px;border-radius:5px;border:1px solid var(--b2);background:transparent;color:var(--t3);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap;min-width:85px}
+.bst:hover{border-color:var(--t2);color:var(--t1)}
+.bst.sc{border-color:var(--am);color:var(--am);background:var(--amd)}
+.bst.sf{border-color:var(--gr);color:var(--gr);background:var(--grd)}
+.noteinp{background:transparent;border:none;border-bottom:1px solid transparent;color:var(--t2);font-family:var(--sans);font-size:12px;width:130px;padding:2px 4px;outline:none;transition:border-color .2s}
+.noteinp:focus{border-bottom-color:var(--gr);color:var(--t1)}
+.noteinp::placeholder{color:var(--t3)}
+.empty{text-align:center;padding:80px 20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.ei{font-size:44px;opacity:.3}
+.et{font-family:var(--mono);font-size:15px;color:var(--t2)}
+.es{font-size:13px;color:var(--t3);max-width:380px;line-height:1.7}
+.overlay{position:fixed;inset:0;background:#000c;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--sf);border:1px solid var(--b2);border-radius:12px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;transform:translateY(10px);transition:transform .2s}
+.overlay.open .modal{transform:none}
+.mh{padding:16px 20px 14px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center}
+.mt{font-family:var(--mono);font-size:13px;color:var(--pu)}
+.mc{background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;line-height:1;padding:0 4px}
+.mc:hover{color:var(--t1)}
+.mb{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.mf{padding:12px 20px;border-top:1px solid var(--b1);display:flex;gap:8px;justify-content:flex-end}
+.drop{border:2px dashed var(--b2);border-radius:8px;padding:30px;text-align:center;cursor:pointer;transition:all .2s}
+.drop:hover,.drop.drag{border-color:var(--pu);background:var(--pud)}
+.drop-ico{font-size:30px;margin-bottom:8px}
+.drop-txt{color:var(--t2);font-size:13px;line-height:1.6}
+.drop-sub{color:var(--t3);font-size:11px;margin-top:5px;font-family:var(--mono)}
+.crow{display:flex;align-items:center;gap:10px}
+.clbl{font-family:var(--mono);font-size:11px;color:var(--t2);width:95px;flex-shrink:0}
+.csel{flex:1;background:var(--sf2);border:1px solid var(--b2);border-radius:6px;padding:6px 10px;color:var(--t1);font-size:12px;outline:none;appearance:none;min-width:0}
+.info{background:var(--sf2);border:1px solid var(--b2);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--t2);line-height:1.7}
+.info strong{color:var(--t1);font-family:var(--mono);font-size:11px}
+.pt{width:100%;border-collapse:collapse;font-size:11px}
+.pt th{padding:5px 8px;font-family:var(--mono);font-size:10px;color:var(--t3);border-bottom:1px solid var(--b1);text-align:left}
+.pt td{padding:5px 8px;border-bottom:1px solid var(--b1);color:var(--t2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--sf);border:1px solid var(--b2);border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--gr);opacity:0;transform:translateY(8px);transition:all .25s;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.toast.err{color:var(--re)}.toast.wrn{color:var(--am)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">SitePro<span>/</span>Leads</div>
+  <div class="hrow">
+    <span class="hlabel">KEY</span>
+    <input type="password" class="hinput" id="apiKey" placeholder="chave serpapi...">
+    <span class="hlabel">WEBHOOK</span>
+    <input type="text" class="hinput" id="webhookUrl" placeholder="https://n8n.tenseiia.com/webhook/sitepro-buscar" style="min-width:240px">
+    <button class="btn-gr" onclick="saveConfig()">Salvar</button>
+  </div>
+</header>
+
+<div class="filters">
+  <div class="fg">
+    <span class="fl">NICHO</span>
+    <select id="nicho">
+      <option value="">⭐ TODOS OS NICHOS</option>
+      <optgroup label="Top 5 — maior conversao">
+        <option value="clinica de estetica">💆 Clínica de Estética</option>
+        <option value="salao de beleza">💇 Salão de Beleza</option>
+        <option value="barbearia">✂️ Barbearia</option>
+        <option value="dentista">🦷 Dentista</option>
+        <option value="contabilidade">📊 Contabilidade</option>
+      </optgroup>
+      <optgroup label="Saude e Bem-estar">
+        <option value="fisioterapia">🦴 Fisioterapia</option>
+        <option value="psicologia">🧠 Psicologia</option>
+        <option value="nutricao">🥗 Nutrição</option>
+        <option value="acupuntura">🪡 Acupuntura</option>
+        <option value="otica">👓 Ótica</option>
+        <option value="farmacia">💊 Farmácia</option>
+        <option value="clinica medica">🩺 Clínica Médica</option>
+        <option value="clinica veterinaria">🐶 Clínica Veterinária</option>
+      </optgroup>
+      <optgroup label="Beleza e Estetica">
+        <option value="studio sobrancelha">👁️ Studio Sobrancelha</option>
+        <option value="micropigmentacao">🎨 Micropigmentação</option>
+        <option value="manicure pedicure">💅 Manicure / Pedicure</option>
+        <option value="depilacao laser">🔆 Depilação Laser</option>
+        <option value="spa massagem">💆 Spa / Massagem</option>
+      </optgroup>
+      <optgroup label="Fitness e Esporte">
+        <option value="academia">🏋️ Academia</option>
+        <option value="pilates studio">🤸 Pilates / Studio</option>
+        <option value="escola natacao">🏊 Escola de Natação</option>
+        <option value="artes marciais">🥊 Artes Marciais</option>
+        <option value="escola danca">💃 Escola de Dança</option>
+        <option value="crossfit">⚡ CrossFit</option>
+      </optgroup>
+      <optgroup label="Alimentacao">
+        <option value="restaurante">🍽️ Restaurante</option>
+        <option value="cafeteria">☕ Cafeteria</option>
+        <option value="padaria">🍞 Padaria</option>
+        <option value="pizzaria">🍕 Pizzaria</option>
+        <option value="hamburgueria">🍔 Hamburgueria</option>
+        <option value="sorveteria">🍦 Sorveteria / Açaí</option>
+        <option value="marmitaria">🥡 Marmitaria</option>
+        <option value="sushi">🍱 Sushi / Japonês</option>
+      </optgroup>
+      <optgroup label="Servicos Profissionais">
+        <option value="despachante">📋 Despachante</option>
+        <option value="advocacia">⚖️ Advocacia</option>
+        <option value="corretor seguros">🛡️ Corretor de Seguros</option>
+        <option value="escola idiomas">🌍 Escola de Idiomas</option>
+        <option value="curso profissionalizante">📚 Curso Profissionalizante</option>
+        <option value="agencia viagens">✈️ Agência de Viagens</option>
+        <option value="contabilidade">📊 Contabilidade</option>
+      </optgroup>
+      <optgroup label="Pet">
+        <option value="pet shop">🐾 Pet Shop</option>
+        <option value="banho tosa">🛁 Banho e Tosa</option>
+        <option value="hotel pets">🏨 Hotel para Pets</option>
+      </optgroup>
+      <optgroup label="Casa e Imoveis">
+        <option value="imobiliaria">🏠 Imobiliária</option>
+        <option value="design interiores">🛋️ Design de Interiores</option>
+        <option value="marmoraria">🪨 Marmoraria</option>
+        <option value="vidracaria">🪟 Vidraçaria</option>
+        <option value="marcenaria">🪵 Marcenaria</option>
+        <option value="dedetizadora">🐛 Dedetizadora</option>
+      </optgroup>
+      <optgroup label="Tecnologia">
+        <option value="assistencia tecnica celular">📱 Assist. Técnica Celular</option>
+        <option value="informatica">💻 Informática</option>
+        <option value="cameras seguranca">📹 Câmeras de Segurança</option>
+        <option value="agencia digital">🌐 Agência Digital</option>
+      </optgroup>
+      <optgroup label="Automotivo">
+        <option value="oficina mecanica">🔧 Oficina Mecânica</option>
+        <option value="funilaria pintura">🚗 Funilaria</option>
+        <option value="estetica automotiva">✨ Estética Automotiva</option>
+        <option value="vidro automotivo">🪟 Vidro Automotivo</option>
+        <option value="lavagem carros">🚿 Lavagem de Carros</option>
+        <option value="som automotivo">🔊 Som Automotivo</option>
+      </optgroup>
+      <optgroup label="Outros">
+        <option value="grafica">🖨️ Gráfica</option>
+        <option value="joalheria relojoaria">⌚ Joalheria</option>
+        <option value="fotografo">📸 Fotógrafo</option>
+        <option value="buffet eventos">🎉 Buffet / Eventos</option>
+        <option value="floricultura">🌸 Floricultura</option>
+        <option value="lavanderia">👕 Lavanderia</option>
+        <option value="brinquedoteca">🎡 Brinquedoteca</option>
+        <option value="escola musica">🎸 Escola de Música</option>
+      </optgroup>
+    </select>
+  </div>
+  <div class="fg">
+    <span class="fl">CIDADE</span>
+    <select id="cidade" onchange="atualizarBairros()">
+      <optgroup label="Sul">
+        <option value="Porto Alegre RS">Porto Alegre, RS</option>
+        <option value="Caxias do Sul RS">Caxias do Sul, RS</option>
+        <option value="Pelotas RS">Pelotas, RS</option>
+        <option value="Canoas RS">Canoas, RS</option>
+        <option value="Santa Maria RS">Santa Maria, RS</option>
+        <option value="Novo Hamburgo RS">Novo Hamburgo, RS</option>
+        <option value="Passo Fundo RS">Passo Fundo, RS</option>
+        <option value="Florianopolis SC">Florianópolis, SC</option>
+        <option value="Joinville SC">Joinville, SC</option>
+        <option value="Blumenau SC">Blumenau, SC</option>
+        <option value="Itajai SC">Itajaí, SC</option>
+        <option value="Chapeco SC">Chapecó, SC</option>
+        <option value="Criciuma SC">Criciúma, SC</option>
+        <option value="Curitiba PR">Curitiba, PR</option>
+        <option value="Londrina PR">Londrina, PR</option>
+        <option value="Maringa PR">Maringá, PR</option>
+        <option value="Ponta Grossa PR">Ponta Grossa, PR</option>
+        <option value="Cascavel PR">Cascavel, PR</option>
+        <option value="Foz do Iguacu PR">Foz do Iguaçu, PR</option>
+      </optgroup>
+      <optgroup label="Sudeste">
+        <option value="Sao Paulo SP">São Paulo, SP</option>
+        <option value="Campinas SP">Campinas, SP</option>
+        <option value="Ribeirao Preto SP">Ribeirão Preto, SP</option>
+        <option value="Santos SP">Santos, SP</option>
+        <option value="Sao Jose dos Campos SP">São José dos Campos, SP</option>
+        <option value="Sorocaba SP">Sorocaba, SP</option>
+        <option value="Osasco SP">Osasco, SP</option>
+        <option value="Santo Andre SP">Santo André, SP</option>
+        <option value="Sao Bernardo do Campo SP">São Bernardo, SP</option>
+        <option value="Bauru SP">Bauru, SP</option>
+        <option value="Jundiai SP">Jundiaí, SP</option>
+        <option value="Piracicaba SP">Piracicaba, SP</option>
+        <option value="Belo Horizonte MG">Belo Horizonte, MG</option>
+        <option value="Uberlandia MG">Uberlândia, MG</option>
+        <option value="Contagem MG">Contagem, MG</option>
+        <option value="Juiz de Fora MG">Juiz de Fora, MG</option>
+        <option value="Betim MG">Betim, MG</option>
+        <option value="Montes Claros MG">Montes Claros, MG</option>
+        <option value="Rio de Janeiro RJ">Rio de Janeiro, RJ</option>
+        <option value="Niteroi RJ">Niterói, RJ</option>
+        <option value="Duque de Caxias RJ">Duque de Caxias, RJ</option>
+        <option value="Nova Iguacu RJ">Nova Iguaçu, RJ</option>
+        <option value="Vitoria ES">Vitória, ES</option>
+        <option value="Vila Velha ES">Vila Velha, ES</option>
+        <option value="Serra ES">Serra, ES</option>
+      </optgroup>
+      <optgroup label="Centro-Oeste">
+        <option value="Brasilia DF">Brasília, DF</option>
+        <option value="Goiania GO">Goiânia, GO</option>
+        <option value="Aparecida de Goiania GO">Aparecida de Goiânia, GO</option>
+        <option value="Anapolis GO">Anápolis, GO</option>
+        <option value="Campo Grande MS">Campo Grande, MS</option>
+        <option value="Dourados MS">Dourados, MS</option>
+        <option value="Cuiaba MT">Cuiabá, MT</option>
+      </optgroup>
+      <optgroup label="Nordeste">
+        <option value="Recife PE">Recife, PE</option>
+        <option value="Caruaru PE">Caruaru, PE</option>
+        <option value="Olinda PE">Olinda, PE</option>
+        <option value="Fortaleza CE">Fortaleza, CE</option>
+        <option value="Caucaia CE">Caucaia, CE</option>
+        <option value="Juazeiro do Norte CE">Juazeiro do Norte, CE</option>
+        <option value="Salvador BA">Salvador, BA</option>
+        <option value="Feira de Santana BA">Feira de Santana, BA</option>
+        <option value="Natal RN">Natal, RN</option>
+        <option value="Mossoro RN">Mossoró, RN</option>
+        <option value="Maceio AL">Maceió, AL</option>
+        <option value="Joao Pessoa PB">João Pessoa, PB</option>
+        <option value="Campina Grande PB">Campina Grande, PB</option>
+        <option value="Teresina PI">Teresina, PI</option>
+        <option value="Sao Luis MA">São Luís, MA</option>
+        <option value="Aracaju SE">Aracaju, SE</option>
+      </optgroup>
+      <optgroup label="Norte">
+        <option value="Manaus AM">Manaus, AM</option>
+        <option value="Belem PA">Belém, PA</option>
+        <option value="Porto Velho RO">Porto Velho, RO</option>
+        <option value="Rio Branco AC">Rio Branco, AC</option>
+        <option value="Macapa AP">Macapá, AP</option>
+        <option value="Boa Vista RR">Boa Vista, RR</option>
+        <option value="Palmas TO">Palmas, TO</option>
+      </optgroup>
+    </select>
+  </div>
+  <div class="fg">
+    <span class="fl">BAIRRO</span>
+    <select id="bairro">
+      <option value="">🏙️ Cidade inteira</option>
+    </select>
+  </div>
+  <div class="fg">
+    <span class="fl">PÁGINAS</span>
+    <select id="paginas">
+      <option value="1">1 (~20)</option>
+      <option value="2" selected>2 (~40)</option>
+      <option value="3">3 (~60)</option>
+      <option value="5">5 (~100)</option>
+    </select>
+  </div>
+  <button class="btn-buscar" id="btnBuscar" onclick="buscarLeads()">
+    <div class="sp"></div><span class="bt">▶ BUSCAR</span>
+  </button>
+  <button class="btn-pu" onclick="abrirModal()">↑ Importar CSV</button>
+</div>
+
+<div class="prog-bar" id="progBar">
+  <span id="progTxt">Buscando...</span>
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+</div>
+<div class="err-bar" id="errBar"></div>
+
+<div class="stats">
+  <div style="display:flex;align-items:center;gap:8px"><div class="sn" id="stTotal">0</div><div class="sl">leads<br>ativos</div></div>
+  <div class="sdiv"></div>
+  <div style="display:flex;align-items:center;gap:8px"><div class="sn a" id="stCont">0</div><div class="sl">contatados</div></div>
+  <div class="sdiv"></div>
+  <div style="display:flex;align-items:center;gap:8px"><div class="sn" id="stFech">0</div><div class="sl">fechados</div></div>
+  <div class="sdiv"></div>
+  <div style="display:flex;align-items:center;gap:8px"><div class="sn r" id="stHist">0</div><div class="sl">histórico<br>total</div></div>
+  <div class="sa">
+    <button class="bs g" onclick="exportCSV()">↓ CSV</button>
+    <button class="bs" onclick="exportBackup()">↓ Backup</button>
+    <button class="bs" onclick="document.getElementById('bkFile').click()">↑ Restaurar</button>
+    <button class="bs r" onclick="limpar()">✕ Limpar</button>
+    <input type="file" id="bkFile" accept=".json" style="display:none" onchange="importBackup(event)">
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-todos" onclick="setTab('todos')">TODOS</div>
+  <div class="tab" id="tab-novos" onclick="setTab('novos')">NOVOS</div>
+  <div class="tab" id="tab-contatados" onclick="setTab('contatados')">CONTATADOS</div>
+  <div class="tab" id="tab-fechados" onclick="setTab('fechados')">FECHADOS</div>
+  <div class="tab" id="tab-sem_site" onclick="setTab('sem_site')">SEM SITE</div>
+</div>
+
+<div class="twrap">
+  <div id="empty" class="empty">
+    <div class="ei">📍</div>
+    <div class="et">Nenhum lead ainda</div>
+    <div class="es">Busque via SerpAPI ou importe um CSV do Outscraper, Apify ou qualquer planilha.</div>
+  </div>
+  <table id="tbl" style="display:none">
+    <thead><tr>
+      <th>#</th><th>NEGÓCIO</th><th>ENDEREÇO</th><th>NOTA</th>
+      <th>TELEFONE</th><th>SITE</th><th>FONTE</th><th>LINKS</th>
+      <th>STATUS</th><th>ANOTAÇÃO</th><th></th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="mh">
+      <span class="mt">↑ IMPORTAR CSV / PLANILHA</span>
+      <button class="mc" onclick="fecharModal()">×</button>
+    </div>
+    <div class="mb">
+      <div id="s1">
+        <div class="drop" id="dropZ"
+          onclick="document.getElementById('csvIn').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="onDrop(event)">
+          <div class="drop-ico">📂</div>
+          <div class="drop-txt">Clique ou arraste o arquivo aqui</div>
+          <div class="drop-sub">CSV · TSV · TXT — vírgula, ponto-e-vírgula ou tab</div>
+        </div>
+        <input type="file" id="csvIn" accept=".csv,.tsv,.txt" style="display:none" onchange="lerArq(event)">
+        <div class="info">
+          <strong>FORMATOS SUPORTADOS</strong><br>
+          Outscraper · Apify · Exportação do próprio app · Qualquer planilha como CSV<br><br>
+          <strong>COLUNAS DETECTADAS AUTOMATICAMENTE</strong><br>
+          name/nome · address/endereço · phone/telefone · website/site · rating/nota · reviews/avaliações
+        </div>
+      </div>
+      <div id="s2" style="display:none">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--t2);margin-bottom:10px">
+          MAPEAR COLUNAS — <span id="fname" style="color:var(--pu)"></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="colMap"></div>
+        <div style="margin-top:12px;font-family:var(--mono);font-size:10px;color:var(--t3)">PREVIEW</div>
+        <div style="overflow-x:auto;margin-top:6px;border:1px solid var(--b1);border-radius:6px">
+          <table class="pt"><thead id="ph"></thead><tbody id="pb"></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="bs" onclick="fecharModal()">Cancelar</button>
+      <button class="bs g" id="btnImp" onclick="importarCSV()" style="display:none">↑ Importar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var allLeads = [];
+var historico = {};
+var tabAtual = 'todos';
+var csvRows = [];
+var csvHeaders = [];
+var buscandoAtiva = false;
+
+var BAIRROS = {
+  'Porto Alegre RS': ['Moinhos de Vento','Bela Vista','Menino Deus','Tristeza','Petropolis','Jardim Botanico','Auxiliadora','Higienopolis','Rio Branco','Boa Vista','Cristal','Ipanema','Cavalhada','Teresopolis','Independencia','Santana','Bom Fim','Centro Historico','Navegantes'],
+  'Florianopolis SC': ['Trindade','Agronomica','Estreito','Coqueiros','Kobrasol','Centro','Lagoa da Conceicao','Ingleses','Jurere','Campeche'],
+  'Joinville SC': ['America','Anita Garibaldi','Bucarein','Centro','Costa e Silva','Iririu','Itaum','Saguacu'],
+  'Blumenau SC': ['Centro','Garcia','Itoupava Norte','Victor Konder','Velha'],
+  'Curitiba PR': ['Batel','Agua Verde','Bigorrilho','Merces','Alto da XV','Cabral','Reboucas','Juveve','Seminario','Boa Vista','Portao'],
+  'Londrina PR': ['Centro','Gleba Palhano','Higienopolis','Londriville'],
+  'Maringa PR': ['Centro','Jardim Alvorada','Zona 07','Zona 01','Zona 02'],
+  'Sao Paulo SP': ['Jardins','Itaim Bibi','Moema','Vila Olimpia','Pinheiros','Perdizes','Santana','Brooklin','Morumbi','Tatuape','Lapa','Vila Mariana','Higienopolis','Bela Vista'],
+  'Campinas SP': ['Centro','Cambui','Bosque','Taquaral','Nova Campinas'],
+  'Ribeirao Preto SP': ['Centro','Jardim California','Republica','Higienopolis'],
+  'Belo Horizonte MG': ['Savassi','Lourdes','Funcionarios','Santo Agostinho','Belvedere','Buritis','Sion','Anchieta','Pampulha'],
+  'Rio de Janeiro RJ': ['Ipanema','Leblon','Copacabana','Barra da Tijuca','Botafogo','Flamengo','Tijuca','Centro','Recreio'],
+  'Niteroi RJ': ['Icarai','Centro','Santa Rosa','Fonseca'],
+  'Vitoria ES': ['Praia do Canto','Jardim da Penha','Bento Ferreira'],
+  'Brasilia DF': ['Asa Sul','Asa Norte','Lago Sul','Lago Norte','Sudoeste','Noroeste','Taguatinga','Aguas Claras'],
+  'Goiania GO': ['Setor Bueno','Setor Marista','Jardim Goias','Setor Sul','Setor Oeste'],
+  'Campo Grande MS': ['Centro','Jardim dos Estados','Monte Castelo'],
+  'Cuiaba MT': ['Centro','Goiabeiras','Jardim Aclimacao'],
+  'Recife PE': ['Boa Viagem','Espinheiro','Gracas','Aflitos','Madalena','Torre','Pina','Casa Forte'],
+  'Fortaleza CE': ['Meireles','Aldeota','Dionisio Torres','Varjota','Coco','Mucuripe'],
+  'Salvador BA': ['Barra','Pituba','Itaigara','Caminho das Arvores','Rio Vermelho','Ondina'],
+  'Natal RN': ['Tirol','Petropolis','Ponta Negra','Capim Macio','Lagoa Nova'],
+  'Maceio AL': ['Pajucara','Ponta Verde','Jatiuca','Mangabeiras'],
+  'Joao Pessoa PB': ['Manaira','Cabo Branco','Tambau','Bessa'],
+  'Teresina PI': ['Centro','Jockey','Ilhotas','Fatima'],
+  'Sao Luis MA': ['Centro','Renascenca','Calhau','Cohama'],
+  'Aracaju SE': ['Jardins','Atalaia','13 de Julho'],
+  'Manaus AM': ['Adrianopolis','Parque 10','Ponta Negra','Flores'],
+  'Belem PA': ['Umarizal','Batista Campos','Marco','Nazare']
+};
+
+var COL_ALIASES = {
+  nome: ['name','nome','title','empresa','negocio','business_name','business'],
+  endereco: ['address','endereco','full_address','addr'],
+  telefone: ['phone','telefone','tel','celular','whatsapp','phone_number'],
+  site: ['website','site','url','web','homepage'],
+  nota: ['rating','nota','score','stars'],
+  avaliacoes: ['reviews','avaliacoes','reviews_count','num_reviews']
+};
+
+function init() {
+  var k = localStorage.getItem('sp_key');
+  if (k) document.getElementById('apiKey').value = k;
+  var w = localStorage.getItem('sp_webhook');
+  if (w) document.getElementById('webhookUrl').value = w;
+  var h = localStorage.getItem('sp_hist');
+  if (h) { try { historico = JSON.parse(h); } catch(e) {} }
+  var l = localStorage.getItem('sp_leads');
+  if (l) { try { allLeads = JSON.parse(l); } catch(e) {} }
+  atualizarBairros();
+  renderTable();
+  updateStats();
+}
+
+function saveConfig() {
+  var k = document.getElementById('apiKey').value.trim();
+  var w = document.getElementById('webhookUrl').value.trim();
+  if (!k) return toast('Cole a chave SerpAPI', 'err');
+  if (!w) return toast('Cole a URL do webhook n8n', 'err');
+  localStorage.setItem('sp_key', k);
+  localStorage.setItem('sp_webhook', w);
+  toast('Configurações salvas ✓');
+}
+
+function atualizarBairros() {
+  var cidade = document.getElementById('cidade').value;
+  var sel = document.getElementById('bairro');
+  var bairros = BAIRROS[cidade] || [];
+  var html = '<option value="">🏙️ Cidade inteira</option>';
+  for (var i = 0; i < bairros.length; i++) {
+    html += '<option value="' + bairros[i] + '">' + bairros[i] + '</option>';
+  }
+  sel.innerHTML = html;
+}
+
+function setProgress(pct, txt) {
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progTxt').textContent = txt;
+}
+
+async function fazerRequisicao(webhookUrl, apiKey, nicho, local, start) {
+  var resp = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ apiKey: apiKey, nicho: nicho, bairro: local, start: start })
+  });
+  if (!resp.ok) {
+    var err = {};
+    try { err = await resp.json(); } catch(e) {}
+    throw new Error(err.error || err.message || ('HTTP ' + resp.status));
+  }
+  return await resp.json();
+}
+
+function processarResultados(results, filtroSite) {
+  var novos = 0, filtrados = 0;
+  for (var i = 0; i < results.length; i++) {
+    var r = results[i];
+    var pid = r.place_id || r.data_id || btoa((r.title||'') + (r.address||'')).slice(0, 20);
+    if (historico[pid]) { filtrados++; continue; }
+    var temSite = !!(r.website || (r.links && r.links.website));
+    if (filtroSite === 'sem' && temSite) continue;
+    var lead = {
+      pid: pid, fonte: 'api',
+      nome: r.title || '—',
+      endereco: r.address || '—',
+      nota: r.rating || null,
+      avaliacoes: r.reviews || 0,
+      telefone: r.phone || null,
+      site: temSite ? (r.website || '') : null,
+      mapsUrl: r.link || ('https://www.google.com/maps/place/?q=place_id:' + pid)
+    };
+    historico[pid] = { status: 'novo', fonte: 'api' };
+    allLeads.unshift(lead);
+    novos++;
+  }
+  return { novos: novos, filtrados: filtrados };
+}
+
+async function buscarLeads() {
+  if (buscandoAtiva) return;
+  var apiKey = document.getElementById('apiKey').value.trim();
+  var webhookUrl = document.getElementById('webhookUrl').value.trim();
+  if (!apiKey) return toast('Insira sua chave SerpAPI', 'err');
+  if (!webhookUrl) return toast('Insira a URL do webhook n8n', 'err');
+
+  var nichoVal = document.getElementById('nicho').value;
+  var cidade = document.getElementById('cidade').value;
+  var bairro = document.getElementById('bairro').value;
+  var paginas = parseInt(document.getElementById('paginas').value);
+
+  // Monta lista de locais a buscar
+  // Se nicho vazio: vai buscar todos os nichos principais em sequência
+  var nichos = nichoVal ? [nichoVal] : [
+    'clinica de estetica','salao de beleza','barbearia',
+    'dentista','contabilidade','academia','restaurante',
+    'pet shop','assistencia tecnica celular','oficina mecanica'
+  ];
+
+  var local = bairro ? (bairro + ' ' + cidade) : cidade;
+
+  var btn = document.getElementById('btnBuscar');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  buscandoAtiva = true;
+  document.getElementById('errBar').classList.remove('show');
+  document.getElementById('progBar').classList.add('show');
+
+  var totalNovos = 0, totalFiltrados = 0;
+  var totalReqs = nichos.length * paginas;
+  var reqFeitas = 0;
+
+  try {
+    for (var ni = 0; ni < nichos.length; ni++) {
+      var nichoAtual = nichos[ni];
+      for (var p = 0; p < paginas; p++) {
+        reqFeitas++;
+        var pct = Math.round((reqFeitas / totalReqs) * 100);
+        setProgress(pct, 'Buscando ' + nichoAtual + ' em ' + local + '... (' + reqFeitas + '/' + totalReqs + ')');
+
+        var data = await fazerRequisicao(webhookUrl, apiKey, nichoAtual, local, p * 20);
+        var results = data.local_results || [];
+        var r = processarResultados(results, 'sem');
+        totalNovos += r.novos;
+        totalFiltrados += r.filtrados;
+
+        if (results.length < 20) break;
+      }
+    }
+
+    saveData();
+    renderTable();
+    updateStats();
+    toast(totalNovos + ' novos leads · ' + totalFiltrados + ' já vistos filtrados');
+
+  } catch(err) {
+    var b = document.getElementById('errBar');
+    b.textContent = 'Erro: ' + err.message;
+    b.classList.add('show');
+    saveData(); renderTable(); updateStats();
+  }
+
+  btn.classList.remove('loading');
+  btn.disabled = false;
+  buscandoAtiva = false;
+  document.getElementById('progBar').classList.remove('show');
+}
+
+function setTab(t) {
+  tabAtual = t;
+  document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab-' + t).classList.add('active');
+  renderTable();
+}
+
+function filtrarTab(arr) {
+  if (tabAtual === 'todos') return arr;
+  if (tabAtual === 'sem_site') return arr.filter(function(l) { return !l.site; });
+  return arr.filter(function(l) { return ((historico[l.pid] || {}).status || 'novo') === tabAtual; });
+}
+
+function isCel(tel) {
+  if (!tel) return false;
+  var d = tel.replace(/\D/g, '');
+  return d.length >= 11 && ['6','7','8','9'].indexOf(d[2]) !== -1;
+}
+
+function renderTable() {
+  var leads = filtrarTab(allLeads.slice());
+  var tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  var empty = document.getElementById('empty');
+  var tbl = document.getElementById('tbl');
+  if (leads.length === 0) { empty.style.display = 'flex'; tbl.style.display = 'none'; return; }
+  empty.style.display = 'none';
+  tbl.style.display = 'table';
+
+  for (var i = 0; i < leads.length; i++) {
+    var l = leads[i];
+    var h = historico[l.pid] || {};
+    var status = h.status || 'novo';
+    var anotacao = (h.anotacao || '').replace(/"/g, '&quot;');
+    var fone = l.telefone ? l.telefone.replace(/\D/g, '') : '';
+    var cel = isCel(l.telefone);
+    var wppUrl = cel ? ('https://wa.me/55' + fone) : '';
+    var igUrl = 'https://www.google.com/search?q=' + encodeURIComponent('"' + l.nome + '" instagram');
+    var notaHtml = l.nota
+      ? '<span style="color:var(--am);font-family:var(--mono);font-size:12px;font-weight:700">' + l.nota + '★</span> <span style="color:var(--t3);font-size:11px;font-family:var(--mono)">(' + (l.avaliacoes || 0) + ')</span>'
+      : '<span style="color:var(--t3)">—</span>';
+    var siteHtml = l.site ? '<span class="badge b-com">TEM SITE</span>' : '<span class="badge b-sem">SEM SITE</span>';
+    var fonteHtml = l.fonte === 'api' ? '<span class="badge b-api">API</span>' : '<span class="badge b-csv">CSV</span>';
+    var telHtml = l.telefone ? (l.telefone + ' <span class="badge ' + (cel ? 'b-cel">CEL' : 'b-fix">FIXO') + '</span>') : '—';
+    var wppHtml = wppUrl ? '<a href="' + wppUrl + '" target="_blank" class="bico wpp" title="WhatsApp">💬</a>' : '<span class="bico off" title="Telefone fixo">☎</span>';
+    var sc = status === 'contatado' ? 'sc' : status === 'fechado' ? 'sf' : '';
+    var sl = status === 'contatado' ? '📞 Contatado' : status === 'fechado' ? '🏆 Fechado' : 'Contatar';
+    var rc = status === 'contatado' ? 'rc' : status === 'fechado' ? 'rf' : '';
+    var nome = l.nome.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var end = l.endereco.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var tr = document.createElement('tr');
+    tr.className = rc;
+    tr.innerHTML =
+      '<td><span style="font-family:var(--mono);color:var(--t3);font-size:11px">' + String(i+1).padStart(2,'0') + '</span></td>' +
+      '<td><div class="ln" title="' + nome + '">' + nome + '</div></td>' +
+      '<td><div class="la" title="' + end + '">' + end + '</div></td>' +
+      '<td>' + notaHtml + '</td>' +
+      '<td>' + telHtml + '</td>' +
+      '<td>' + siteHtml + '</td>' +
+      '<td>' + fonteHtml + '</td>' +
+      '<td><div class="abtns">' + wppHtml +
+        '<a href="' + igUrl + '" target="_blank" class="bico ig" title="Buscar Instagram">📸</a>' +
+        '<a href="' + (l.mapsUrl || '#') + '" target="_blank" class="bico mp" title="Google Maps">📍</a>' +
+      '</div></td>' +
+      '<td><button class="bst ' + sc + '" onclick="toggleStatus(\'' + l.pid + '\')">' + sl + '</button></td>' +
+      '<td><input class="noteinp" placeholder="anotação..." value="' + anotacao + '" onchange="salvarNota(\'' + l.pid + '\', this.value)"></td>' +
+      '<td><button class="bs r" style="padding:3px 8px;font-size:9px" onclick="remover(\'' + l.pid + '\')">✕</button></td>';
+    tbody.appendChild(tr);
+  }
+}
+
+function toggleStatus(pid) {
+  var h = historico[pid] || {};
+  var cur = h.status || 'novo';
+  var next = cur === 'novo' ? 'contatado' : cur === 'contatado' ? 'fechado' : 'novo';
+  historico[pid] = Object.assign({}, h, { status: next });
+  saveData(); renderTable(); updateStats();
+}
+
+function salvarNota(pid, val) {
+  historico[pid] = Object.assign({}, historico[pid] || {}, { anotacao: val });
+  saveData();
+}
+
+function remover(pid) {
+  allLeads = allLeads.filter(function(l) { return l.pid !== pid; });
+  historico[pid] = Object.assign({}, historico[pid] || {}, { status: 'removido' });
+  saveData(); renderTable(); updateStats();
+}
+
+function updateStats() {
+  document.getElementById('stTotal').textContent = allLeads.length;
+  document.getElementById('stCont').textContent = Object.values(historico).filter(function(h) { return h.status === 'contatado'; }).length;
+  document.getElementById('stFech').textContent = Object.values(historico).filter(function(h) { return h.status === 'fechado'; }).length;
+  document.getElementById('stHist').textContent = Object.keys(historico).length;
+}
+
+function saveData() {
+  localStorage.setItem('sp_hist', JSON.stringify(historico));
+  localStorage.setItem('sp_leads', JSON.stringify(allLeads));
+}
+
+function exportCSV() {
+  if (!allLeads.length) return toast('Nenhum lead para exportar', 'wrn');
+  var hd = ['nome','endereco','nota','avaliacoes','telefone','tipo_tel','site','fonte','status','anotacao','whatsapp','instagram','maps'];
+  var rows = allLeads.map(function(l) {
+    var h = historico[l.pid] || {};
+    var fone = l.telefone ? l.telefone.replace(/\D/g,'') : '';
+    var cel = isCel(l.telefone);
+    return [l.nome,l.endereco,l.nota||'',l.avaliacoes||0,l.telefone||'',cel?'celular':'fixo',
+      l.site||'',l.fonte||'',h.status||'novo',h.anotacao||'',
+      cel?'https://wa.me/55'+fone:'',
+      'https://www.google.com/search?q='+encodeURIComponent('"'+l.nome+'" instagram'),
+      l.mapsUrl||''];
+  });
+  var csv = [hd].concat(rows).map(function(r) {
+    return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(',');
+  }).join('\n');
+  dl('\uFEFF'+csv, 'sitepro-leads-'+td()+'.csv', 'text/csv;charset=utf-8');
+  toast(allLeads.length + ' leads exportados ✓');
+}
+
+function exportBackup() {
+  dl(JSON.stringify({leads:allLeads,historico:historico,exportado:new Date().toISOString()},null,2),
+    'sitepro-backup-'+td()+'.json','application/json');
+  toast('Backup exportado ✓');
+}
+
+function importBackup(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (data.leads) {
+        var existIds = {};
+        allLeads.forEach(function(l) { existIds[l.pid] = true; });
+        var novas = data.leads.filter(function(l) { return !existIds[l.pid]; });
+        allLeads = novas.concat(allLeads);
+        historico = Object.assign({}, historico, data.historico);
+        saveData(); renderTable(); updateStats();
+        toast(novas.length + ' leads restaurados ✓');
+      }
+    } catch(e) { toast('Arquivo inválido', 'err'); }
+  };
+  r.readAsText(file); e.target.value = '';
+}
+
+function limpar() {
+  if (!confirm('Apaga todos os leads e histórico. Continuar?')) return;
+  allLeads = []; historico = {};
+  saveData(); renderTable(); updateStats();
+  toast('Limpo ✓');
+}
+
+function abrirModal() {
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('s1').style.display = 'block';
+  document.getElementById('s2').style.display = 'none';
+  document.getElementById('btnImp').style.display = 'none';
+  csvRows = []; csvHeaders = [];
+}
+
+function fecharModal() { document.getElementById('overlay').classList.remove('open'); }
+
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZ').classList.remove('drag');
+  var f = e.dataTransfer.files[0]; if (f) processCSV(f);
+}
+
+function lerArq(e) {
+  var f = e.target.files[0]; if (f) processCSV(f); e.target.value = '';
+}
+
+function processCSV(file) {
+  var r = new FileReader();
+  r.onload = function(ev) {
+    var text = ev.target.result;
+    var result = parseCSV(text);
+    if (!result || !result.rows.length) return toast('Arquivo vazio ou inválido', 'err');
+    csvHeaders = result.headers; csvRows = result.rows;
+    document.getElementById('fname').textContent = file.name;
+    document.getElementById('s1').style.display = 'none';
+    document.getElementById('s2').style.display = 'block';
+    document.getElementById('btnImp').style.display = 'inline-block';
+    renderColMap(); renderPreview();
+  };
+  r.readAsText(file, 'utf-8');
+}
+
+function parseCSV(text) {
+  var first = text.split('\n')[0];
+  var sep = first.indexOf(';') !== -1 ? ';' : first.indexOf('\t') !== -1 ? '\t' : ',';
+  var lines = text.split('\n').filter(function(l) { return l.trim(); });
+  if (lines.length < 2) return null;
+  var headers = splitLine(lines[0], sep).map(function(h) { return h.trim().replace(/^"|"$/g, ''); });
+  var rows = lines.slice(1).map(function(line) {
+    var cols = splitLine(line, sep).map(function(c) { return c.trim().replace(/^"|"$/g, ''); });
+    var obj = {}; headers.forEach(function(h, i) { obj[h] = cols[i] || ''; }); return obj;
+  });
+  return { headers: headers, rows: rows };
+}
+
+function splitLine(line, sep) {
+  var res = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i];
+    if (ch === '"') { inQ = !inQ; }
+    else if (ch === sep && !inQ) { res.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  res.push(cur); return res;
+}
+
+function detectCol(campo) {
+  var aliases = COL_ALIASES[campo] || [];
+  for (var i = 0; i < csvHeaders.length; i++) {
+    if (aliases.indexOf(csvHeaders[i].toLowerCase().trim()) !== -1) return csvHeaders[i];
+  }
+  return '';
+}
+
+function renderColMap() {
+  var campos = ['nome','endereco','telefone','site','nota','avaliacoes'];
+  var labels = { nome:'Nome *', endereco:'Endereço', telefone:'Telefone', site:'Site/URL', nota:'Nota', avaliacoes:'Avaliações' };
+  var cm = document.getElementById('colMap'); cm.innerHTML = '';
+  campos.forEach(function(c) {
+    var det = detectCol(c);
+    var opts = '<option value="">— ignorar —</option>';
+    csvHeaders.forEach(function(h) { opts += '<option value="' + h + '"' + (h === det ? ' selected' : '') + '>' + h + '</option>'; });
+    var row = document.createElement('div'); row.className = 'crow';
+    row.innerHTML = '<span class="clbl">' + labels[c] + '</span><select class="csel" id="col-' + c + '">' + opts + '</select>';
+    cm.appendChild(row);
+  });
+}
+
+function renderPreview() {
+  var ph = document.getElementById('ph'), pb = document.getElementById('pb');
+  ph.innerHTML = '<tr>' + csvHeaders.map(function(h) { return '<th>' + h + '</th>'; }).join('') + '</tr>';
+  pb.innerHTML = csvRows.slice(0, 3).map(function(row) {
+    return '<tr>' + csvHeaders.map(function(h) { return '<td title="' + (row[h]||'') + '">' + (row[h]||'') + '</td>'; }).join('') + '</tr>';
+  }).join('');
+}
+
+function importarCSV() {
+  if (!csvRows.length) return;
+  var gc = function(c) { var el = document.getElementById('col-' + c); return el ? el.value : ''; };
+  var colNome = gc('nome');
+  if (!colNome) return toast('Selecione a coluna Nome', 'err');
+  var importados = 0, dups = 0;
+  csvRows.forEach(function(row, idx) {
+    var nome = (row[colNome] || '').trim(); if (!nome) return;
+    var endereco = row[gc('endereco')] || '';
+    var telefone = row[gc('telefone')] || '';
+    var site = row[gc('site')] || '';
+    var nota = parseFloat(row[gc('nota')]) || null;
+    var avaliacoes = parseInt(row[gc('avaliacoes')]) || 0;
+    var pidBase = nome + endereco;
+    var pid = 'imp_' + pidBase.split('').reduce(function(a,c){return(((a<<5)-a)+c.charCodeAt(0))|0;},0).toString(36) + idx;
+    if (historico[pid]) { dups++; return; }
+    var lead = { pid:pid, fonte:'csv', nome:nome, endereco:endereco||'—',
+      telefone:telefone||null, site:site||null, nota:nota, avaliacoes:avaliacoes,
+      mapsUrl:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(nome+' '+endereco) };
+    historico[pid] = { status:'novo', fonte:'csv' };
+    allLeads.unshift(lead); importados++;
+  });
+  saveData(); renderTable(); updateStats(); fecharModal();
+  toast(importados + ' importados · ' + dups + ' duplicatas ignoradas');
+}
+
+function dl(content, filename, type) {
+  var b = new Blob([content], {type:type});
+  var u = URL.createObjectURL(b);
+  var a = document.createElement('a'); a.href=u; a.download=filename; a.click();
+  setTimeout(function(){URL.revokeObjectURL(u);},1000);
+}
+
+function td() { return new Date().toISOString().split('T')[0]; }
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(function(){t.className='toast';}, 3200);
+}
+
+init();
+</script>
+</body>
+</html>
